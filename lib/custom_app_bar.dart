@@ -1,16 +1,22 @@
+// custom_app_bar.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
-import 'package:view_ref/app_color.dart';
+import 'package:view_ref/riverpod/theme_provider.dart';
 import 'package:view_ref/extensions.dart';
+import 'package:view_ref/app_color.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
   final bool showBackButton;
   final List<Widget>? actions;
   final Color? backgroundColor;
   final Widget? profileAvatar;
   final Widget? leading;
-  final bool floating;
+  final bool showLogo;
+  final IconData leadingIcon;
+  final Widget? customTitle;
+  final bool showThemeButton; // 🔹 yeni parametre
 
   const CustomAppBar({
     Key? key,
@@ -20,112 +26,116 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.profileAvatar,
     this.leading,
-    this.floating = false,
+    this.showLogo = true,
+    this.leadingIcon = Icons.group_rounded,
+    this.customTitle,
+    this.showThemeButton = false, // default false
   }) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 16);
+  Size get preferredSize => const Size.fromHeight(60);
 
   @override
-  Widget build(BuildContext context) {
-    final Color bgColor = backgroundColor ?? AppColors.backgroundWhite;
-    final Color textColor = Theme.of(context).appBarTheme.titleTextStyle?.color ?? AppColors.textBlack;
-    final Color iconColor = Theme.of(context).iconTheme.color ?? AppColors.iconSelected;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
 
-    final paddingHorizontal = context.dynamicWidth(0.05);
-    final fontSize = context.dynamicHeight(0.028).clamp(18.0, 22.0).toDouble();
+    final bgColor = backgroundColor ?? AppColors.backgroundWhite(themeMode);
+    final iconColor = AppColors.iconSelected(themeMode);
+    final textColor = iconColor;
 
-    // Status bar
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        statusBarColor: bgColor,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
-      ),
-    );
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: bgColor,
+      statusBarIconBrightness:
+          themeMode == ThemeMode.light ? Brightness.dark : Brightness.light,
+      statusBarBrightness:
+          themeMode == ThemeMode.light ? Brightness.light : Brightness.dark,
+    ));
+
+    // Tema toggle butonu sadece showThemeButton true ise göster
+    final themeToggleButton = showThemeButton
+        ? IconButton(
+            icon: Icon(
+              themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode,
+              color: iconColor,
+            ),
+            onPressed: () {
+              ref.read(themeProvider.notifier).toggleTheme();
+            },
+          )
+        : const SizedBox.shrink();
+
+    final paddingHorizontal = context.dynamicWidth(0.04);
+    final fontSize = context.dynamicWidth(0.035);
 
     return Material(
       color: Colors.transparent,
       child: SafeArea(
         bottom: false,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: paddingHorizontal),
           height: preferredSize.height,
+          padding: EdgeInsets.symmetric(horizontal: paddingHorizontal),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: BorderRadius.circular(floating ? 25 : 0),
-            boxShadow: [
-              if (floating)
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-            ],
-            border: const Border(
-              bottom: BorderSide(color: AppColors.borderLight, width: 0.7),
+            border: Border(
+              bottom: BorderSide(color: iconColor.withOpacity(0.2), width: 1),
             ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Leading
               if (leading != null)
                 Padding(
-                  padding: EdgeInsets.only(right: context.dynamicWidth(0.03)),
-                  child: leading,
+                  padding: EdgeInsets.only(right: context.dynamicWidth(0.02)),
+                  child: leading!,
+                )
+              else if (showLogo)
+                Padding(
+                  padding: EdgeInsets.only(right: context.dynamicWidth(0.02)),
+                  child: Icon(
+                    leadingIcon,
+                    color: iconColor,
+                    size: context.dynamicWidth(0.06),
+                  ),
+                )
+              else if (showBackButton)
+                Transform.translate(
+                  offset: Offset(context.dynamicWidth(-0.02), 0),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: Icon(Icons.arrow_back_ios,
+                        size: context.dynamicWidth(0.045), color: iconColor),
+                    onPressed: () {
+                      if (Navigator.canPop(context)) Navigator.pop(context);
+                    },
+                  ),
                 )
               else
-                Icon(Icons.group, color: iconColor, size: fontSize * 1.3),
+                SizedBox(width: context.dynamicWidth(0.05)),
 
-              // Back button
-              if (showBackButton)
-                IconButton(
-                  icon: Icon(Icons.arrow_back_ios, color: iconColor, size: fontSize * 0.8),
-                  onPressed: () {
-                    if (Navigator.canPop(context)) Navigator.pop(context);
-                  },
-                )
-              else
-                SizedBox(width: fontSize * 1.4),
-
-              // Title
               Expanded(
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w500,
-                    color: textColor,
-                    letterSpacing: 0.6,
-                    shadows: [
-                      Shadow(
-                        color: iconColor.withOpacity(0.05),
-                        offset: const Offset(0, 1),
-                        blurRadius: 1,
-                      ),
-                    ],
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: customTitle ??
+                        Text(
+                          title,
+                          key: const ValueKey('title'),
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              fontSize: fontSize,
+                              fontWeight: FontWeight.w600,
+                              color: textColor),
+                        ),
                   ),
                 ),
               ),
 
-              // Actions
-              if (actions != null) ...actions!,
-
-              // Profile avatar
+              if (actions != null) ...[Row(children: actions!)],
+              themeToggleButton,
               if (profileAvatar != null) ...[
-                SizedBox(width: context.dynamicWidth(0.03)),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(50),
-                  child: SizedBox(
-                    height: fontSize * 1.6,
-                    width: fontSize * 1.6,
-                    child: profileAvatar,
-                  ),
-                ),
+                SizedBox(width: context.dynamicWidth(0.02)),
+                profileAvatar!,
               ],
             ],
           ),

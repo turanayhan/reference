@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:view_ref/app_theme.dart';
 import 'package:view_ref/main_screen.dart';
+import 'package:view_ref/riverpod/theme_provider.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox('settings');
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-    
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: Dashboard()
+      // Riverpod üzerinden tema modu
+      themeMode: themeMode,
+
+      // Light ve Dark temalar AppTheme üzerinden
+      theme: AppTheme.themeData(ThemeMode.light),
+      darkTheme: AppTheme.themeData(ThemeMode.dark),
+
+      home: Dashboard(),
     );
   }
 }
-

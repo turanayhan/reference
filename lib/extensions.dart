@@ -1,4 +1,4 @@
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 extension MediaQueryExtension on BuildContext {
   MediaQueryData get mediaQuery => MediaQuery.of(this);
@@ -114,27 +114,9 @@ extension PaddingExtension on BuildContext {
   EdgeInsets get paddingBottomHigh => EdgeInsets.only(bottom: highValue);
 }
 
-extension ThemeExtension on BuildContext {
-  /// Get the theme data
-  ThemeData get theme => Theme.of(this);
+extension FontSizeClampExtension on double {
+  /// Sadece maksimum font sınırı
+  double maxFont(double max) => this > max ? max : this;
 
-  /// Get the text theme
-  TextTheme get textTheme => Theme.of(this).textTheme;
-
-  /// Get the brightness
-  Brightness get brightness => Theme.of(this).brightness;
-}
-
-extension DateFormatExtension on String {
-  /// ISO 8601 formatındaki string'i "dd.MM.yyyy" formatına çevirir.
-  String toFormattedDate() {
-    try {
-      final date = DateTime.parse(this);
-      return "${date.day.toString().padLeft(2, '0')}."
-          "${date.month.toString().padLeft(2, '0')}."
-          "${date.year}";
-    } catch (_) {
-      return this; // Hatalı tarih formatı gelirse olduğu gibi döner
-    }
-  }
+  double clampFont(double min, double max) => clamp(min, max).toDouble();
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/app_color.dart';
 import 'package:view_ref/extensions.dart';
+import 'package:view_ref/riverpod/theme_provider.dart';
 
-class CustomNavigationBar extends StatelessWidget {
+class CustomNavigationBar extends ConsumerWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
   final List<Map<String, dynamic>> menuItems;
@@ -15,7 +17,17 @@ class CustomNavigationBar extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider);
+
+    final sidebarBg = AppColors.sidebarBackground(themeMode);
+    final borderColor = AppColors.borderLight(themeMode);
+    final iconSelected = AppColors.iconSelected(themeMode);
+    final iconUnselected = AppColors.iconUnselected(themeMode);
+    final textUnselected = AppColors.textUnselected(themeMode);
+    final selectedBg = AppColors.selectedItemBackground(themeMode);
+    final shadowColor = Colors.black12;
+
     return Container(
       margin: context.paddingAllDefault,
       padding: EdgeInsets.symmetric(
@@ -23,15 +35,12 @@ class CustomNavigationBar extends StatelessWidget {
         vertical: context.dynamicHeight(0.01),
       ),
       decoration: BoxDecoration(
-        color: AppColors.sidebarBackground,
+        color: sidebarBg,
         borderRadius: BorderRadius.circular(context.dynamicHeight(0.03)),
-        border: Border.all(
-          color: AppColors.borderLight,
-          width: 1,
-        ),
+        border: Border.all(color: borderColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black12,
+            color: shadowColor,
             blurRadius: context.dynamicHeight(0.015),
             offset: Offset(0, context.dynamicHeight(0.005)),
           ),
@@ -39,8 +48,8 @@ class CustomNavigationBar extends StatelessWidget {
       ),
       child: Row(
         children: List.generate(menuItems.length, (index) {
-          bool isSelected = index == selectedIndex;
-          bool isMiddle = index == (menuItems.length / 2).floor();
+          final isSelected = index == selectedIndex;
+          final isMiddle = index == (menuItems.length / 2).floor();
 
           return Expanded(
             child: InkWell(
@@ -53,13 +62,8 @@ class CustomNavigationBar extends StatelessWidget {
                         padding: EdgeInsets.all(context.dynamicHeight(0.015)),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isSelected
-                              ? AppColors.selectedItemBackground
-                              : AppColors.sidebarBackground,
-                          border: Border.all(
-                            color: AppColors.borderLight,
-                            width: 1,
-                          ),
+                          color: isSelected ? selectedBg : sidebarBg,
+                          border: Border.all(color: borderColor, width: 1),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black26,
@@ -71,9 +75,7 @@ class CustomNavigationBar extends StatelessWidget {
                         child: Icon(
                           menuItems[index]['icon'],
                           size: context.dynamicHeight(0.03),
-                          color: isSelected
-                              ? AppColors.iconSelected
-                              : AppColors.iconUnselected,
+                          color: isSelected ? iconSelected : iconUnselected,
                         ),
                       ),
                     )
@@ -83,10 +85,8 @@ class CustomNavigationBar extends StatelessWidget {
                       ),
                       decoration: isSelected
                           ? BoxDecoration(
-                              color: AppColors.selectedItemBackground,
-                              borderRadius: BorderRadius.circular(
-                                context.dynamicHeight(0.02),
-                              ),
+                              color: selectedBg,
+                              borderRadius: BorderRadius.circular(context.dynamicHeight(0.02)),
                             )
                           : null,
                       child: Column(
@@ -95,24 +95,16 @@ class CustomNavigationBar extends StatelessWidget {
                           Icon(
                             menuItems[index]['icon'],
                             size: context.dynamicHeight(0.025),
-                            color: isSelected
-                                ? AppColors.iconSelected
-                                : AppColors.iconUnselected,
+                            color: isSelected ? iconSelected : iconUnselected,
                           ),
-                          SizedBox(height: context.dynamicHeight(0.00)),
+                          SizedBox(height: context.dynamicHeight(0.002)),
                           Text(
                             menuItems[index]['label'],
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: context
-                                  .dynamicHeight(0.011)
-                                  .clamp(10.0, 14.0),
-                              fontWeight: isSelected
-                                  ? FontWeight.w700
-                                  : FontWeight.w600,
-                              color: isSelected
-                                  ? AppColors.iconCustomColor
-                                  : AppColors.textUnselected,
+                              fontSize: context.dynamicHeight(0.011).clamp(10.0, 14.0),
+                              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                              color: isSelected ? iconSelected : textUnselected,
                             ),
                           ),
                         ],
@@ -125,5 +117,3 @@ class CustomNavigationBar extends StatelessWidget {
     );
   }
 }
-
-

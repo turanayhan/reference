@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart' hide NavigationBar;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/app_color.dart';
 import 'package:view_ref/extensions.dart';
+import 'package:view_ref/riverpod/theme_provider.dart';
 
-class PopupMenuItemWidget extends StatelessWidget {
+class PopupMenuItemWidget extends ConsumerWidget {
   final Map<String, dynamic> item;
   final VoidCallback onTap;
 
-  const PopupMenuItemWidget({Key? key, required this.item, required this.onTap}) : super(key: key);
+  const PopupMenuItemWidget({Key? key, required this.item, required this.onTap})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeProvider); // ThemeMode light/dark
+    final borderColor = AppColors.borderLight(themeMode);
+    final backgroundColor = themeMode == ThemeMode.light ? Colors.white : Colors.grey[850]!;
+    final iconColor = item['color'] ?? AppColors.iconSelected(themeMode);
+    final textColor = iconColor;
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: context.lowValue * 0.25),
       child: Material(
@@ -17,15 +26,16 @@ class PopupMenuItemWidget extends StatelessWidget {
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(context.dynamicHeight(0.015)),
-            color: Colors.white,
+            color: backgroundColor,
             border: Border.all(
-              color: AppColors.borderLight,
+              color: borderColor,
               width: 1,
             ),
           ),
           child: InkWell(
             onTap: onTap,
-            splashColor: item['color'].withOpacity(0.2),
+            splashColor: iconColor.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(context.dynamicHeight(0.015)),
             child: Container(
               width: context.dynamicWidth(0.36),
               height: context.dynamicHeight(0.05),
@@ -38,7 +48,7 @@ class PopupMenuItemWidget extends StatelessWidget {
                 children: [
                   Icon(
                     item['icon'],
-                    color: AppColors.selectedItemBackground,
+                    color: iconColor,
                     size: context.dynamicHeight(0.025),
                   ),
                   SizedBox(width: context.dynamicWidth(0.03)),
@@ -48,7 +58,7 @@ class PopupMenuItemWidget extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: context.dynamicHeight(0.014),
-                        color: AppColors.selectedItemBackground,
+                        color: textColor,
                       ),
                     ),
                   ),

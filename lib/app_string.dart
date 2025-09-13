@@ -22,23 +22,18 @@ class AppStrings {
   static const String copyright = '©2025 Ayssoft';
   static const String passwordLabel = 'Şifre';
   static const String emailLabel = 'Email';
-
   static const String genericError = 'Bir hata oluştu';
   static const String serverError = 'Sunucu hatası';
   static const String networkError = 'Network hatası veya Dio hatası';
   static const String dataProcessingError = 'Veri işlenirken hata oluştu';
   static const invalidCredentials = "Kullanıcı adı veya şifre hatalı";
   static const String unauthorizedError = 'Kullanıcı adı veya şifre hatalı';
-
   static const String noInternetError = 'İnternet bağlantısı yok';
-
-  // MainScreen Sayfa Başlıkları
   static const String home = 'AnaSayfa';
   static const String leave = 'İzinlerim';
   static const String advance = 'Avans';
   static const String payroll = 'Bordolarım';
   static const String settings = 'Ayarlar';
-
   static const String upcomingEventsTitle = "Yaklaşan Etkinlikler";
   static const String viewAll = "Tümünü Gör →";
   static const String noUpcomingEvents = "Yaklaşan etkinlik bulunmamaktadır";
