@@ -55,7 +55,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final themeToggleButton = showThemeButton
         ? IconButton(
             icon: Icon(
-              themeMode == ThemeMode.light ? Icons.dark_mode : Icons.light_mode,
+              themeMode == ThemeMode.light ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
               color: iconColor,
             ),
             onPressed: () {
