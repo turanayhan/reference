@@ -5,8 +5,8 @@ import 'package:view_ref/home_widget/search_widget.dart';
 import 'package:view_ref/mixin_home.dart';
 import 'package:view_ref/profile_menu.dart';
 import 'package:view_ref/riverpod/employe_provider.dart';
-import 'package:view_ref/riverpod/theme_provider.dart';
 import 'package:view_ref/app_color.dart';
+import 'package:view_ref/riverpod/theme_provider.dart';
 
 class Home extends ConsumerStatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -18,9 +18,11 @@ class Home extends ConsumerStatefulWidget {
 class _HomeState extends ConsumerState<Home> with EmployeeListMixin<Home> {
   @override
   Widget build(BuildContext context) {
-    final themeMode = ref.watch(themeProvider);
+  
     final employees = ref.watch(employeeProvider);
     final visibleEmployees = getVisibleEmployees(employees);
+        ref.watch(themeProvider);
+
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -38,13 +40,13 @@ class _HomeState extends ConsumerState<Home> with EmployeeListMixin<Home> {
         actions: [
           if (!isSearching)
             IconButton(
-              icon: Icon(Icons.search, color: AppColors.iconSelected(themeMode)),
+              icon: Icon(Icons.search, color: AppColors.iconSelected),
               onPressed: startSearch,
             ),
         ],
         showThemeButton: true,
         profileAvatar: ProfileMenuButton(onSelected: (value) {}),
-        backgroundColor: AppColors.backgroundWhite(themeMode),
+        backgroundColor: AppColors.backgroundWhite,
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (scrollInfo) {
@@ -66,17 +68,22 @@ class _HomeState extends ConsumerState<Home> with EmployeeListMixin<Home> {
             }
             final employee = visibleEmployees[index];
             return Card(
-              color: AppColors.cardDefaultColor(themeMode),
+              color: AppColors.cardDefaultColor,
               child: ListTile(
-                title: Text(employee.name, style: TextStyle(color: AppColors.textPrimary(themeMode))),
-                subtitle: Text('${employee.department} - ${employee.description}',
-                    style: TextStyle(color: AppColors.textUnselected(themeMode))),
+                title: Text(
+                  employee.name,
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
+                subtitle: Text(
+                  '${employee.department} - ${employee.description}',
+                  style: TextStyle(color: AppColors.textUnselected),
+                ),
               ),
             );
           },
         ),
       ),
-      backgroundColor: AppColors.backgroundWhite(themeMode),
+      backgroundColor: AppColors.backgroundWhite,
     );
   }
 }

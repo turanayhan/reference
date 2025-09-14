@@ -39,8 +39,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
 
-    final bgColor = backgroundColor ?? AppColors.backgroundWhite(themeMode);
-    final iconColor = AppColors.iconSelected(themeMode);
+    final bgColor = backgroundColor ?? AppColors.backgroundWhite;
+    final iconColor = AppColors.iconSelected;
     final textColor = iconColor;
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

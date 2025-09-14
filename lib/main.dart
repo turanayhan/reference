@@ -19,14 +19,10 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      // Riverpod üzerinden tema modu
       themeMode: themeMode,
-
-      // Light ve Dark temalar AppTheme üzerinden
       theme: AppTheme.themeData(ThemeMode.light),
       darkTheme: AppTheme.themeData(ThemeMode.dark),
 

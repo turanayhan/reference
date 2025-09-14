@@ -24,21 +24,21 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
   @override
   Widget build(BuildContext context) {
     final leaveTypes = ref.watch(leaveTypesProvider);
-    final selectedLeaveType = ref.watch(selectedLeaveTypeProvider);
     final startDate = ref.watch(startDateProvider);
     final endDate = ref.watch(endDateProvider);
     final returnDate = ref.watch(returnDateProvider);
     final description = ref.watch(descriptionProvider);
     final totalLeaveDays = ref.watch(totalLeaveDaysProvider);
-    final themeMode = ref.watch(themeProvider);
+        ref.watch(themeProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundWhite(themeMode),
+      backgroundColor: AppColors.backgroundWhite,
       appBar: const CustomAppBar(
         title: 'Yeni İzin Oluştur',
         showBackButton: true,
       ),
       body: Padding(
+      
         padding: context.paddingHorizontalDefault + context.paddingVerticalDefault,
         child: SingleChildScrollView(
           child: Column(
@@ -59,7 +59,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
                   text: totalLeaveDays.toString(),
                 ),
                 hintText: '0',
-                style: TextStyle(color: AppColors.textUnselected(themeMode)),
+                style: TextStyle(color: AppColors.textUnselected),
                 maxLines: 1,
                 minLines: 1,
               ),
@@ -77,7 +77,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
                     ref.read(endDateProvider.notifier).state = null;
                   }
                 },
-                themeMode: themeMode,
+             
               ),
               SizedBox(height: context.defaultValue),
 
@@ -88,7 +88,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
                 onDateSelected: (date) {
                   ref.read(endDateProvider.notifier).state = date;
                 },
-                themeMode: themeMode,
+             
                 minTime: startDate,
               ),
               SizedBox(height: context.defaultValue),
@@ -111,15 +111,15 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
                 onDateSelected: (date) {
                   ref.read(returnDateProvider.notifier).state = date;
                 },
-                themeMode: themeMode,
+              
                 minTime: endDate,
               ),
               SizedBox(height: context.defaultValue),
 
               buildButtons(
                 context,
-                themeMode, // <- themeMode parametresi burada geçirildi
                 () => Navigator.pop(context),
+                
                 () async {
                   if (startDate != null && endDate != null) {
                     final leaveData = LeaveData(
@@ -129,7 +129,6 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
                       days: totalLeaveDays,
                       description: description ?? '',
                       leavePolicyId: 1,
-                      caregiverId: 1,
                       returnDate: returnDate?.toString(),
                     );
                     // leaveData gönderilebilir
@@ -146,7 +145,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
   Future<void> _showDateTimePicker({
     required BuildContext context,
     required ValueChanged<DateTime> onConfirm,
-    required ThemeMode themeMode,
+ 
     DateTime? minTime,
     DateTime? maxTime,
   }) async {
@@ -156,13 +155,13 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
       minTime: minTime,
       maxTime: maxTime,
       theme: picker.DatePickerTheme(
-        backgroundColor: AppColors.inputBackground(themeMode),
+        backgroundColor: AppColors.inputBackground,
         itemStyle: TextStyle(
-          color: AppColors.textUnselected(themeMode),
+          color: AppColors.textUnselected,
           fontSize: 18,
         ),
         doneStyle: TextStyle(
-          color: AppColors.primaryColor(themeMode),
+          color: AppColors.primaryColor,
           fontSize: 16,
           fontWeight: FontWeight.w600,
         ),
@@ -178,7 +177,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
     required String title,
     required DateTime? date,
     required void Function(DateTime) onDateSelected,
-    required ThemeMode themeMode,
+  
     String? hintText,
     DateTime? minTime,
     DateTime? maxTime,
@@ -190,7 +189,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
       onTap: () => _showDateTimePicker(
         context: context,
         onConfirm: onDateSelected,
-        themeMode: themeMode,
+      
         minTime: minTime,
         maxTime: maxTime,
       ),
@@ -206,7 +205,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
 
   Widget buildButtons(
     BuildContext context,
-    ThemeMode themeMode,
+
     VoidCallback onCancel,
     VoidCallback onSubmit,
   ) {
@@ -218,16 +217,16 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
             onPressed: onCancel,
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(40),
-              side: BorderSide(color: AppColors.inputBorderGrey(themeMode), width: 1.0),
+              side: BorderSide(color: AppColors.inputBorderGrey, width: 1.0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(6),
               ),
-              backgroundColor: AppColors.inputBackground(themeMode),
+              backgroundColor: AppColors.inputBackground,
             ),
             child: Text(
               'İptal Et',
               style: TextStyle(
-                color: AppColors.textUnselected(themeMode),
+                color: AppColors.textUnselected,
                 fontSize: context.defaultValue.clampFont(12, 16),
                 fontWeight: FontWeight.w600,
               ),
@@ -242,7 +241,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
             onPressed: onSubmit,
             style: ElevatedButton.styleFrom(
               minimumSize: const Size.fromHeight(40),
-              backgroundColor: AppColors.primaryColor(themeMode),
+              backgroundColor: AppColors.primaryColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(6),
               ),
@@ -250,7 +249,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
             child: Text(
               'Oluştur',
               style: TextStyle(
-                color: AppColors.whiteColor(themeMode),
+                color: AppColors.whiteColor,
                 fontSize: context.defaultValue.clampFont(12, 16),
                 fontWeight: FontWeight.w600,
               ),

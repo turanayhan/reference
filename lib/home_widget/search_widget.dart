@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/app_color.dart';
-import 'package:view_ref/riverpod/theme_provider.dart';
 
 class SearchBarField extends ConsumerWidget {
   final TextEditingController controller;
@@ -17,14 +16,11 @@ class SearchBarField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
-
-    final backgroundColor =
-        themeMode == ThemeMode.light ? Colors.grey.shade100 : Colors.grey.shade800;
-    final borderColor =
-        themeMode == ThemeMode.light ? Colors.grey.shade300 : Colors.grey.shade700;
-    final iconColor = AppColors.navbarIconSelectedColor(themeMode);
-    final textColor = iconColor;
+    
+    final backgroundColor = AppColors.lightGrayColor;
+    final borderColor = AppColors.inputBorderGrey;
+    final iconColor = AppColors.iconSelected;
+    final textColor = AppColors.textPrimary;
 
     return Container(
       key: const ValueKey('search'),

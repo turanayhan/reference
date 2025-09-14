@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/extensions.dart';
 import 'package:view_ref/app_color.dart';
-import 'package:view_ref/riverpod/theme_provider.dart';
 
 class CustomDropdownField<T> extends ConsumerWidget {
   final String? title;
@@ -32,7 +31,7 @@ class CustomDropdownField<T> extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
+  
     final radius = borderRadius ?? 8.0;
     final padding = contentPadding ??
         EdgeInsets.symmetric(horizontal: context.defaultValue, vertical: 10);
@@ -51,7 +50,7 @@ class CustomDropdownField<T> extends ConsumerWidget {
             child: Text(
               title!,
               style: TextStyle(
-                color: AppColors.textUnselected(themeMode),
+                color: AppColors.textUnselected,
                 fontSize: context.dynamicHeight(0.0135),
                 fontWeight: FontWeight.w400,
               ),
@@ -61,17 +60,16 @@ class CustomDropdownField<T> extends ConsumerWidget {
         DropdownButtonFormField<T>(
           value: selectedValue,
           isExpanded: true,
-          dropdownColor: AppColors.inputBackground(themeMode), // 🔹 Menü arka planı
+          dropdownColor: AppColors.inputBackground, // 🔹 Menü arka planı
           menuMaxHeight: 250, // 🔹 Maksimum yükseklik
           items: items.map((item) {
             final isSelected = item == selectedValue;
             return DropdownMenuItem<T>(
               value: item,
               child: Text(
-                
                 item.toString(),
                 style: TextStyle(
-                  color: AppColors.textPrimary(themeMode),
+                  color: AppColors.textPrimary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),
@@ -82,33 +80,36 @@ class CustomDropdownField<T> extends ConsumerWidget {
               : (value) => ref.read(provider.notifier).state = value,
           decoration: InputDecoration(
             hintText: hintText ?? '',
-            hintStyle: TextStyle(color: AppColors.hintColor(themeMode)),
+            hintStyle: TextStyle(color: AppColors.hintColor),
             filled: true,
-            fillColor: AppColors.lightGrayColor(themeMode),
+            fillColor: AppColors.lightGrayColor,
             contentPadding: padding,
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(radius),
               borderSide: BorderSide(
-                color: AppColors.inputBorderGrey(themeMode),
+                color: AppColors.inputBorderGrey,
                 width: 1.0,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(radius),
               borderSide: BorderSide(
-                color: AppColors.inputBorderGrey(themeMode),
+                color: AppColors.inputBorderGrey,
                 width: 1.0,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(radius),
-          
+              borderSide: BorderSide(
+                color: AppColors.primaryColor,
+                width: 1.5,
+              ),
             ),
           ),
           style: TextStyle(
-            color: AppColors.textPrimary(themeMode),
+            color: AppColors.textPrimary,
             fontSize: context.defaultValue.clampFont(14, 16),
           ),
         ),

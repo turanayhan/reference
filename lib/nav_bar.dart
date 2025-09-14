@@ -6,16 +6,12 @@ class CustomNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
   final List<Map<String, dynamic>> menuItems;
-  final bool isMiddleSelected;
-  final ThemeMode themeMode; // <- Tema parametresi eklendi
 
   const CustomNavigationBar({
     Key? key,
     required this.selectedIndex,
     required this.onItemTapped,
     required this.menuItems,
-    required this.isMiddleSelected,
-    required this.themeMode, // <- Tema parametresi zorunlu
   }) : super(key: key);
 
   @override
@@ -27,12 +23,12 @@ class CustomNavigationBar extends StatelessWidget {
         vertical: context.dynamicHeight(0.01),
       ),
       decoration: BoxDecoration(
-        color: AppColors.sidebarBackground(themeMode),
+        color: AppColors.sidebarBackground,
         borderRadius: BorderRadius.circular(context.dynamicHeight(0.03)),
-        border: Border.all(color: AppColors.borderLight(themeMode), width: 1),
+        border: Border.all(color: AppColors.borderLight, width: 1),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowColor(themeMode),
+            color: AppColors.shadowColor,
             blurRadius: context.dynamicHeight(0.015),
             offset: Offset(0, context.dynamicHeight(0.005)),
           ),
@@ -52,7 +48,7 @@ class CustomNavigationBar extends StatelessWidget {
                 ),
                 decoration: isSelected
                     ? BoxDecoration(
-                        color: AppColors.selectedItemBackground(themeMode),
+                        color: AppColors.selectedItemBackground,
                         borderRadius: BorderRadius.circular(
                           context.dynamicHeight(0.02),
                         ),
@@ -65,8 +61,8 @@ class CustomNavigationBar extends StatelessWidget {
                       menuItems[index]['icon'],
                       size: context.dynamicHeight(0.025),
                       color: isSelected
-                          ? AppColors.iconSelected(themeMode)
-                          : AppColors.iconUnselected(themeMode),
+                          ? AppColors.iconSelected
+                          : AppColors.iconUnselected,
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -75,8 +71,8 @@ class CustomNavigationBar extends StatelessWidget {
                         fontSize: context.dynamicHeight(0.011).clamp(10.0, 14.0),
                         fontWeight: FontWeight.w600,
                         color: isSelected
-                            ? AppColors.navbarSelecetTextColor(themeMode)
-                            : AppColors.navbarUnSelectTextColor(themeMode),
+                            ? AppColors.navbarSelecetTextColor
+                            : AppColors.navbarUnSelectTextColor,
                       ),
                     ),
                   ],

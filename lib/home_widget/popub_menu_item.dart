@@ -2,7 +2,6 @@ import 'package:flutter/material.dart' hide NavigationBar;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/app_color.dart';
 import 'package:view_ref/extensions.dart';
-import 'package:view_ref/riverpod/theme_provider.dart';
 
 class PopupMenuItemWidget extends ConsumerWidget {
   final Map<String, dynamic> item;
@@ -13,10 +12,10 @@ class PopupMenuItemWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider); // ThemeMode light/dark
-    final borderColor = AppColors.borderLight(themeMode);
-    final backgroundColor = themeMode == ThemeMode.light ? Colors.white : Colors.grey[850]!;
-    final iconColor = item['color'] ?? AppColors.iconSelected(themeMode);
+
+    final borderColor = AppColors.borderLight;
+    final backgroundColor = AppColors.inputBackground;
+    final iconColor = item['color'] ?? AppColors.iconSelected;
     final textColor = iconColor;
 
     return Padding(
@@ -40,8 +39,9 @@ class PopupMenuItemWidget extends ConsumerWidget {
               width: context.dynamicWidth(0.36),
               height: context.dynamicHeight(0.05),
               padding: EdgeInsets.symmetric(
-                  vertical: context.lowValue * 0.5,
-                  horizontal: context.defaultValue * 0.8),
+                vertical: context.lowValue * 0.5,
+                horizontal: context.defaultValue * 0.8,
+              ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,

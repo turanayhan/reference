@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/app_color.dart';
 import 'package:view_ref/extensions.dart';
-import 'package:view_ref/riverpod/theme_provider.dart';
+
 
 class CustomTextFormField extends ConsumerWidget {
   final String? title;
@@ -84,8 +84,6 @@ class CustomTextFormField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider); // 🔹 Riverpod Theme Provider
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +97,7 @@ class CustomTextFormField extends ConsumerWidget {
             child: Text(
               title!,
               style: TextStyle(
-                color: AppColors.textUnselected(themeMode),
+                color: titleColor ?? AppColors.textUnselected,
                 fontSize: context.dynamicHeight(0.0135),
                 fontWeight: FontWeight.w400,
                 letterSpacing: 0.2,
@@ -111,7 +109,7 @@ class CustomTextFormField extends ConsumerWidget {
           controller: _controller,
           focusNode: focusNode,
           keyboardType: keyboardType,
-          cursorColor: AppColors.blackColor(themeMode),
+          cursorColor: AppColors.blackColor,
           cursorRadius: const Radius.circular(8),
           readOnly: readOnly ?? false,
           obscureText: obscureText ?? false,
@@ -130,7 +128,6 @@ class CustomTextFormField extends ConsumerWidget {
           textInputAction: textInputAction ?? TextInputAction.done,
           onFieldSubmitted: onFieldSubmitted,
           textCapitalization: textCapitalization ?? TextCapitalization.none,
-         
           onTapOutside: (PointerDownEvent event) {
             FocusScope.of(context).unfocus();
             onEditingComplete?.call();
@@ -147,43 +144,45 @@ class CustomTextFormField extends ConsumerWidget {
                   vertical: context.dynamicHeight(0.01),
                 ),
                 hintText: hintText,
-              
+                hintStyle: TextStyle(color: AppColors.hintColor),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: AppColors.inputBorderGrey(themeMode),
+                    color: AppColors.inputBorderGrey,
                     width: 1.0,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: AppColors.inputBorderGrey(themeMode),
+                    color: AppColors.inputBorderGrey,
                     width: 1.0,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                 
+                  borderSide: BorderSide(
+                    color: AppColors.primaryColor,
+                    width: 1.2,
+                  ),
                 ),
                 errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: AppColors.errorRed(themeMode),
+                    color: AppColors.errorRed,
                     width: 1.0,
                   ),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: AppColors.errorRed(themeMode),
+                    color: AppColors.errorRed,
                     width: 1.2,
                   ),
                 ),
-                fillColor: AppColors.lightGrayColor(themeMode),
+                fillColor: AppColors.lightGrayColor,
                 filled: true,
                 labelText: labelText,
-               
                 helperText: helperText,
               ),
           onTap: onTap,

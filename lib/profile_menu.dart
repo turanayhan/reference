@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/extensions.dart';
-import 'package:view_ref/riverpod/theme_provider.dart';
 import 'package:view_ref/app_color.dart';
 
 class ProfileMenuButton extends ConsumerWidget {
@@ -12,12 +11,10 @@ class ProfileMenuButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
-
-    final iconColor = AppColors.iconCustomColor(themeMode);
-    final textColor = AppColors.textPrimary(themeMode);
-    final popupBgColor = AppColors.backgroundWhite(themeMode);
-    final secondaryIconColor = AppColors.iconUnselected(themeMode);
+    final iconColor = AppColors.iconCustomColor;
+    final textColor = AppColors.textPrimary;
+    final popupBgColor = AppColors.backgroundWhite;
+    final secondaryIconColor = AppColors.iconUnselected;
 
     return SizedBox(
       height: context.dynamicHeight(0.050),
