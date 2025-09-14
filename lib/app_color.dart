@@ -133,6 +133,7 @@ class AppColors {
   static Color softPurple(ThemeMode mode) =>
       mode == ThemeMode.light ? const Color(0xFFF3E8FF) : Colors.grey[800]!;
 
+
   static Color lightYellow(ThemeMode mode) =>
       mode == ThemeMode.light ? const Color(0xFFFEF3C7) : Colors.grey[800]!;
 
