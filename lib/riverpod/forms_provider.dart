@@ -1,9 +1,8 @@
-// leave_form_providers.dart
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:view_ref/model/leave_model.dart';
 import 'package:view_ref/riverpod/leave_policiy_provider.dart';
 
-final selectedLeaveTypeProvider = StateProvider<String?>((ref) => null);
+final selectedLeaveRuleProvider = StateProvider<LeaveRule?>((ref) => null);
 final startDateProvider = StateProvider<DateTime?>((ref) => null);
 final endDateProvider = StateProvider<DateTime?>((ref) => null);
 final returnDateProvider = StateProvider<DateTime?>((ref) => null);
@@ -18,17 +17,15 @@ final totalLeaveDaysProvider = Provider<int>((ref) {
   return 0;
 });
 
-final leaveTypesProvider = Provider<List<String>>((ref) {
+final leaveRulesProvider = Provider<List<LeaveRule>>((ref) {
   final leavePoliciesAsync = ref.watch(leavePolicyProvider);
   return leavePoliciesAsync.maybeWhen(
     data: (policies) {
-      final names = <String>{};
+      final rules = <LeaveRule>[];
       for (final policy in policies) {
-        for (final rule in policy.leaveRules ?? []) {
-          if (rule.name != null) names.add(rule.name!);
-        }
+        rules.addAll(policy.leaveRules ?? []);
       }
-      return names.toList();
+      return rules;
     },
     orElse: () => [],
   );

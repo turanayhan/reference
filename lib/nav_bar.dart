@@ -71,8 +71,8 @@ class CustomNavigationBar extends StatelessWidget {
                         fontSize: context.dynamicHeight(0.011).clamp(10.0, 14.0),
                         fontWeight: FontWeight.w600,
                         color: isSelected
-                            ? AppColors.navbarSelecetTextColor
-                            : AppColors.navbarUnSelectTextColor,
+                               ? AppColors.iconSelected
+                          : AppColors.iconUnselected,
                       ),
                     ),
                   ],

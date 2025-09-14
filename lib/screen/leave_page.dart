@@ -8,6 +8,7 @@ import 'package:view_ref/custom_app_bar.dart';
 import 'package:view_ref/extensions.dart';
 import 'package:view_ref/mixin/create_leave_mixin.dart';
 import 'package:view_ref/model/leave_data.dart';
+import 'package:view_ref/model/leave_model.dart';
 import 'package:view_ref/riverpod/forms_provider.dart';
 import 'package:view_ref/riverpod/theme_provider.dart';
 
@@ -23,12 +24,13 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
 
   @override
   Widget build(BuildContext context) {
-    final leaveTypes = ref.watch(leaveTypesProvider);
+    final leaveRules = ref.watch(leaveRulesProvider);
     final startDate = ref.watch(startDateProvider);
     final endDate = ref.watch(endDateProvider);
     final returnDate = ref.watch(returnDateProvider);
     final description = ref.watch(descriptionProvider);
     final totalLeaveDays = ref.watch(totalLeaveDaysProvider);
+       final selectedRule = ref.watch(selectedLeaveRuleProvider);
         ref.watch(themeProvider);
 
     return Scaffold(
@@ -44,11 +46,12 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomDropdownField<String>(
+              CustomDropdownField<LeaveRule>(
                 title: "İzin Türü *",
                 hintText: "İzin Türü Seçiniz",
-                items: ["Yıllık", "Mazeret", "Doğum"],
-                provider: selectedLeaveTypeProvider,
+                items: leaveRules,
+                itemAsString: (rule) => rule.name ?? "İsimsiz Kural",
+                provider: selectedLeaveRuleProvider,
               ),
               SizedBox(height: context.defaultValue),
 
@@ -121,18 +124,21 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
                 () => Navigator.pop(context),
                 
                 () async {
-                  if (startDate != null && endDate != null) {
-                    final leaveData = LeaveData(
-                      leaveRuleId: 1,
-                      startDate: startDate.toString(),
-                      endDate: endDate.toString(),
-                      days: totalLeaveDays,
-                      description: description ?? '',
-                      leavePolicyId: 1,
-                      returnDate: returnDate?.toString(),
-                    );
-                    // leaveData gönderilebilir
-                  }
+              
+
+if (selectedRule != null && startDate != null && endDate != null) {
+  final leaveData = LeaveData(
+    leaveRuleId: selectedRule.id!,
+    startDate: startDate.toString(),
+    endDate: endDate.toString(),
+    days: totalLeaveDays,
+    description: description ?? '',
+    leavePolicyId: selectedRule.leavePolicyId,
+    returnDate: returnDate?.toString(),
+  );
+  // Artık tüm ID'lere sahipsin
+}
+
                 },
               ),
             ],

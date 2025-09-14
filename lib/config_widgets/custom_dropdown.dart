@@ -7,13 +7,16 @@ class CustomDropdownField<T> extends ConsumerWidget {
   final String? title;
   final String? hintText;
   final List<T> items;
-  final StateProvider<T?> provider; 
+  final StateProvider<T?> provider;
   final bool? enabled;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final EdgeInsetsGeometry? contentPadding;
   final double? borderRadius;
   final double? bottomPadding;
+
+  /// Yeni eklenen: dropdown item'larının nasıl string'e çevrileceğini belirler
+  final String Function(T)? itemAsString;
 
   const CustomDropdownField({
     Key? key,
@@ -27,11 +30,11 @@ class CustomDropdownField<T> extends ConsumerWidget {
     this.contentPadding,
     this.borderRadius,
     this.bottomPadding,
+    this.itemAsString, // Eklendi
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-  
     final radius = borderRadius ?? 8.0;
     final padding = contentPadding ??
         EdgeInsets.symmetric(horizontal: context.defaultValue, vertical: 10);
@@ -60,14 +63,17 @@ class CustomDropdownField<T> extends ConsumerWidget {
         DropdownButtonFormField<T>(
           value: selectedValue,
           isExpanded: true,
-          dropdownColor: AppColors.inputBackground, // 🔹 Menü arka planı
-          menuMaxHeight: 250, // 🔹 Maksimum yükseklik
+          dropdownColor: AppColors.inputBackground,
+          menuMaxHeight: 250,
           items: items.map((item) {
             final isSelected = item == selectedValue;
+            final text = itemAsString != null
+                ? itemAsString!(item)
+                : item.toString();
             return DropdownMenuItem<T>(
               value: item,
               child: Text(
-                item.toString(),
+                text,
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
