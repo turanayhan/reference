@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/app_color.dart';
+import 'package:view_ref/helper/navigation_helper.dart';
 import 'package:view_ref/home.dart';
 import 'package:view_ref/screen/leave_page.dart';
 import 'package:view_ref/riverpod/theme_provider.dart';
 import 'package:view_ref/app_string.dart';
 import 'package:view_ref/nav_bar.dart';
+import 'package:view_ref/screen/payment_page.dart';
+import 'package:view_ref/screen/permissions_screen.dart';
 
 class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -17,10 +21,6 @@ class Dashboard extends ConsumerStatefulWidget {
 class _DashboardState extends ConsumerState<Dashboard>
     with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
-
-  late AnimationController _controller;
-  bool _isNavBarVisible = true;
-  DateTime _lastToggle = DateTime.now();
 
   final List<GlobalKey<NavigatorState>> _navigatorKeys = List.generate(
     5,
@@ -38,16 +38,6 @@ class _DashboardState extends ConsumerState<Dashboard>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   void _onItemTapped(int index) {
@@ -59,61 +49,48 @@ class _DashboardState extends ConsumerState<Dashboard>
   }
 
   Widget _buildOffstageNavigator(int index) {
-  ref.watch(themeProvider);
-    
+    ref.watch(themeProvider);
+
     return Offstage(
       offstage: _selectedIndex != index,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: _handleScrollNotification,
-        child: Navigator(
-          key: _navigatorKeys[index],
-          onGenerateRoute: (settings) {
-            late Widget child;
-            switch (index) {
-              case 0:
-                child = const Home();
-                break;
-              case 1:
-                child = const CreateLeavePage();
-                break;
-              case 2:
-                child = const Center(child: Text('Mesai Sayfası'));
-                break;
-              case 3:
-                child = const Center(child: Text('Maaş Bordrosu'));
-                break;
-              case 4:
-                child = const Center(child: Text('Harcama Sayfası'));
-                break;
-            }
-            return MaterialPageRoute(builder: (_) => child, settings: settings);
-          },
-        ),
+      child: Navigator(
+        key: _navigatorKeys[index],
+        onGenerateRoute: (settings) {
+          late Widget child;
+          switch (index) {
+            case 0:
+              child = const Home();
+              break;
+            case 1:
+              child = const CreateLeavePage();
+              break;
+            case 2:
+              child = const PermissionsPage();
+              break;
+            case 3:
+              child = const PaymentsPage();
+              break;
+            case 4:
+              child = const Center(child: Text('Harcama Sayfası'));
+              break;
+          }
+          return MaterialPageRoute(builder: (_) => child, settings: settings);
+        },
       ),
     );
   }
 
-  bool _handleScrollNotification(ScrollNotification notification) {
-    if (notification is ScrollUpdateNotification) {
-      final double? delta = notification.scrollDelta;
-      final timeSinceLast = DateTime.now().difference(_lastToggle);
 
-      if (delta != null && timeSinceLast > const Duration(milliseconds: 100)) {
-        if (delta > 0 && _isNavBarVisible) {
-          setState(() {
-            _isNavBarVisible = false;
-            _lastToggle = DateTime.now();
-          });
-        } else if (delta < 0 && !_isNavBarVisible) {
-          setState(() {
-            _isNavBarVisible = true;
-            _lastToggle = DateTime.now();
-          });
-        }
-      }
-    }
-    return false;
+Future<bool> _maybeExitApp() async {
+  if (Theme.of(context).platform == TargetPlatform.android) {
+    await NavigationHelper.moveTaskToBack();
+    return false; // uygulama kapanmasın
   }
+  return true;
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,27 +99,33 @@ class _DashboardState extends ConsumerState<Dashboard>
 
     return WillPopScope(
       onWillPop: () async {
-        final isFirst = !await _navigatorKeys[_selectedIndex].currentState!
-            .maybePop();
-        return isFirst;
-      },
+  final currentNavigator = _navigatorKeys[_selectedIndex].currentState;
+
+  if (currentNavigator != null && currentNavigator.canPop()) {
+    currentNavigator.pop();
+    return false;
+  }
+
+  if (_selectedIndex != 0) {
+    setState(() => _selectedIndex = 0);
+    return false;
+  }
+
+  // Ana sayfadaysa, uygulamayı arka plana al
+  // (uygulamayı kapatmak yerine gizlemek için)
+  return await _maybeExitApp();
+},
+
+
       child: Scaffold(
         extendBody: true,
         body: Stack(
           children: List.generate(5, (i) => _buildOffstageNavigator(i)),
         ),
-        bottomNavigationBar: AnimatedSlide(
-          duration: const Duration(milliseconds: 300),
-          offset: _isNavBarVisible ? Offset.zero : const Offset(0, 1),
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 300),
-            opacity: _isNavBarVisible ? 1 : 0,
-            child: CustomNavigationBar(
-              selectedIndex: _selectedIndex,
-              onItemTapped: _onItemTapped,
-              menuItems: menuItems,
-            ),
-          ),
+        bottomNavigationBar: CustomNavigationBar(
+          selectedIndex: _selectedIndex,
+          onItemTapped: _onItemTapped,
+          menuItems: menuItems,
         ),
       ),
     );

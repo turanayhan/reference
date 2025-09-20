@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:view_ref/app_theme.dart';
-import 'package:view_ref/main_screen.dart';
 import 'package:view_ref/riverpod/theme_provider.dart';
+import 'package:view_ref/screen/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,8 @@ class MyApp extends ConsumerWidget {
       theme: AppTheme.themeData(ThemeMode.light),
       darkTheme: AppTheme.themeData(ThemeMode.dark),
 
-      home: Dashboard(),
+            home: const SplashScreen(), 
+
     );
   }
 }

@@ -120,3 +120,11 @@ extension FontSizeClampExtension on double {
 
   double clampFont(double min, double max) => clamp(min, max).toDouble();
 }
+
+extension ResponsiveFontExtension on BuildContext {
+  double responsiveFontSize(double scale, {double max = double.infinity}) {
+    final screenHeight = MediaQuery.of(this).size.height;
+    final calculated = screenHeight * scale;
+    return calculated > max ? max : calculated;
+  }
+}

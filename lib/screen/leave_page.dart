@@ -20,6 +20,7 @@ class CreateLeavePage extends ConsumerStatefulWidget {
 }
 
 class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFormMixin {
+  bool _hideNavBar = false;
   final selectedLeaveTypeProvider = StateProvider<String?>((ref) => null);
 
   @override
@@ -163,19 +164,32 @@ if (selectedRule != null && startDate != null && endDate != null) {
       theme: picker.DatePickerTheme(
         backgroundColor: AppColors.inputBackground,
         itemStyle: TextStyle(
-          color: AppColors.textUnselected,
-          fontSize: 18,
+          color: AppColors.primaryColor,
+          fontSize: context.responsiveFontSize(0.028, max: 24),
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.2,
         ),
         doneStyle: TextStyle(
           color: AppColors.primaryColor,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontSize: context.responsiveFontSize(0.025, max: 20),
+          fontWeight: FontWeight.w700,
         ),
+        cancelStyle: TextStyle(
+          color: AppColors.textUnselected,
+          fontSize: context.responsiveFontSize(0.022, max: 18),
+          fontWeight: FontWeight.w500,
+        ),
+        containerHeight: context.height * 0.42, // Ekrana göre yükseklik
+        titleHeight: context.height * 0.07,
+        itemHeight: context.height * 0.06,
+        headerColor: AppColors.primaryColor.withOpacity(0.08),
+        
       ),
       onConfirm: onConfirm,
       currentTime: DateTime.now(),
       locale: picker.LocaleType.tr,
     );
+    setState(() => _hideNavBar = false);
   }
 
   Widget buildDateField({

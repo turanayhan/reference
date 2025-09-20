@@ -43,8 +43,11 @@ class _HomeState extends ConsumerState<Home> with EmployeeListMixin<Home> {
               icon: Icon(Icons.search, color: AppColors.iconSelected),
               onPressed: startSearch,
             ),
+          
         ],
         showThemeButton: true,
+        showBackButton: true,
+        
         profileAvatar: ProfileMenuButton(onSelected: (value) {}),
         backgroundColor: AppColors.backgroundWhite,
       ),
