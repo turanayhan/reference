@@ -8,14 +8,9 @@ class PermissionsPage extends StatelessWidget {
   const PermissionsPage({super.key});
 
   void _showLeaveDialog(BuildContext context, LeaveData leave) {
-    // Extension factory metodunu kullan
+
     DetailDialogFactory.showLeave(context, leave);
-    
-    // Alternatif kullanım:
-    // showDialog(
-    //   context: context,
-    //   builder: (context) => DetailDialogFactory.leave(data: leave),
-    // );
+
   }
 
   @override

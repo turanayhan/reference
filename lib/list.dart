@@ -8,9 +8,10 @@ class LeaveDummyData {
       LeaveData(
         id: 1,
         days: 3,
-        startDate: "2025-09-10",
-        endDate: "2025-09-12",
-        description: "Yıllık izin",
+        startDate: "2025-09-21 11:35:00",
+        endDate: "2025-09-21 13:39:00",
+        description:
+            "sdfksdmflksdnfjldsnfjdksbsdvsdvsvsvsdvsdvfdsvgdsgrebrebre",
         status: "rejected",
         employee: Employee(
           id: 101,
@@ -122,7 +123,8 @@ class LeaveDummyData {
         leaveRule: LeaveRule(
           id: 1,
           name: "Yıllık İzin",
-          description: "Çalışanların yıllık izin hakkı",
+          description:
+              "Çalışanların yıllık izin hakfdvdfvfdvdfdvdfvdvdfvdvdfvdvdfvfdkı",
         ),
         approvalFlow: ApprovalFlow(
           id: 33,
@@ -156,9 +158,6 @@ class LeaveDummyData {
     ];
   }
 }
-
-
-
 
 class PaymentDummyData {
   static List<Payment> getPayments() {

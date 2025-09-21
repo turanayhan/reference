@@ -2,8 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:view_ref/app_color.dart';
 import 'package:view_ref/dialog/detail_dialog.dart';
 import 'package:view_ref/dialog/info_row_item.dart';
-import 'package:view_ref/model/leave_data.dart';
-import 'package:view_ref/model/payment.dart';
+
+
+  String _calculateDurationOrDays(String? startDateStr, String? endDateStr, int? days) {
+  try {
+    if (startDateStr == null || endDateStr == null) return "-";
+
+    final startDate = DateTime.parse(startDateStr);
+    final endDate = DateTime.parse(endDateStr);
+    final duration = endDate.difference(startDate);
+
+    if (duration.inDays < 1) {
+      final hours = duration.inHours;
+      final minutes = duration.inMinutes % 60;
+      return "$hours saat $minutes dakika";
+    } else {
+      return "${days ?? '-'} gün";
+    }
+  } catch (e) {
+    return "-";
+  }
+}
+
+
 
 extension DetailDialogFactory on DetailDialog {
   static DetailDialog leave({
@@ -17,16 +38,25 @@ extension DetailDialogFactory on DetailDialog {
       company: data.company,
       infoRows: [
         InfoRowItem(
-          title: "Tarih",
-          value: "${data.startDate} - ${data.endDate}",
+          title: "Başlangıç",
+          value: "${data.startDate}",
           icon: Icons.calendar_today,
           iconColor: Colors.blue,
         ),
-        InfoRowItem(
-          title: "Gün Sayısı",
-          value: "${data.days ?? '-'} gün",
-          icon: Icons.timer,
+
+         InfoRowItem(
+          title: "Bitiş",
+          value: "${data.endDate}",
+          icon: Icons.calendar_today,
+          iconColor: Colors.blue,
         ),
+InfoRowItem(
+  title: "Süre",
+  value: _calculateDurationOrDays(data.startDate, data.endDate, data.days),
+  icon: Icons.timer,
+),
+
+
         InfoRowItem(
           title: "Kural",
           value: data.leaveRule?.name ?? "Belirtilmemiş",
@@ -135,7 +165,7 @@ extension DetailDialogFactory on DetailDialog {
     }
   }
 
-  // Show dialog helper methods
+  
   static void showLeave(BuildContext context, dynamic data) {
     showDialog(context: context, builder: (_) => leave(data: data));
   }

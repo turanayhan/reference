@@ -3,7 +3,6 @@ import 'package:view_ref/app_color.dart';
 import 'package:view_ref/dialog/info_row_item.dart';
 import 'package:view_ref/extensions.dart';
 
-
 class DetailDialog extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -37,7 +36,7 @@ class DetailDialog extends StatelessWidget {
         vertical: context.dynamicHeight(0.04),
       ),
       child: Container(
-        padding: context.paddingAllHigh*0.6,
+        padding: context.paddingAllHigh * 0.6,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: AppColors.cardDefaultColor,
@@ -101,7 +100,7 @@ class DetailDialog extends StatelessWidget {
                               style: TextStyle(
                                 color: _getStatusColor(status),
                                 fontSize: context.responsiveFontSize(0.011, max: 11),
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -137,7 +136,7 @@ class DetailDialog extends StatelessWidget {
 
                   // Tarih alanı ise sadece tarih kısmını göster
                   if (item.title.toLowerCase().contains('tarih')) {
-                    displayValue = _formatDateOnly(item.value);
+                    displayValue = item.value;
                   }
 
                   return _buildInfoRow(
@@ -154,124 +153,118 @@ class DetailDialog extends StatelessWidget {
               ),
 
               // Onay Süreci
-             // Onay Süreci
-if (employee != null && approvalFlow != null) ...[
-  SizedBox(height: context.dynamicHeight(0.03)),
-  Text(
-    "Onay Süreci",
-    style: TextStyle(
-      fontSize: context.responsiveFontSize(0.02, max: 18),
-      fontWeight: FontWeight.w600,
-    ),
-  ),
-  SizedBox(height: context.dynamicHeight(0.02)),
-  Container(
-    padding: EdgeInsets.all(context.dynamicWidth(0.04)),
-    decoration: BoxDecoration(
-      color: AppColors.cardDefaultColor,
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: AppColors.grey,
-        width: 1,
-      ),
-    ),
-    child: Row(
-      children: [
-        // Talep Eden
-        Expanded(
-          child: _buildStep(
-            context: context,
-            icon: Icons.person,
-            title: "Talep Eden",
-            subtitle: employee?.name ?? "-",
-            isCompleted: true,
-          ),
-        ),
+              if (employee != null && approvalFlow != null) ...[
+                SizedBox(height: context.dynamicHeight(0.03)),
+                Text(
+                  "Onay Süreci",
+                  style: TextStyle(
+                    fontSize: context.responsiveFontSize(0.02, max: 18),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: context.dynamicHeight(0.02)),
+                Container(
+                  padding: EdgeInsets.all(context.dynamicWidth(0.04)),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardDefaultColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.grey,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // Talep Eden
+                      Expanded(
+                        child: _buildStep(
+                          context: context,
+                          icon: Icons.person,
+                          title: "Talep Eden",
+                          subtitle: employee?.name ?? "-",
+                          isCompleted: true,
+                          status: 'approved',
+                        ),
+                      ),
 
-        // Ok 1
-        Icon(
-          Icons.arrow_forward_ios,
-          color: AppColors.grey,
-          size: context.dynamicWidth(0.035),
-        ),
+                      // Ok 1
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: AppColors.grey,
+                        size: context.dynamicWidth(0.035),
+                      ),
 
-        // Şirket
-        Expanded(
-          child: _buildStep(
-            context: context,
-            icon: Icons.business,
-            title: "Şirket",
-            subtitle: company?.name ?? "-",
-            isCompleted: true,
-          ),
-        ),
+                      // Şirket
+                      Expanded(
+                        child: _buildStep(
+                          context: context,
+                          icon: Icons.business,
+                          title: "Şirket",
+                          subtitle: company?.name ?? "-",
+                          isCompleted: true,
+                          status: 'approved',
+                        ),
+                      ),
 
-        // Ok 2
-        Icon(
-          Icons.arrow_forward_ios,
-          color: AppColors.grey,
-          size: context.dynamicWidth(0.035),
-        ),
+                      // Ok 2
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: AppColors.grey,
+                        size: context.dynamicWidth(0.035),
+                      ),
 
-        // Durum (Onaylayan / Reddeden / Beklemede)
-        Expanded(
-          child: Builder(
-            builder: (context) {
-              final steps = (approvalFlow?.steps as List?) ?? [];
-              final step = steps.isNotEmpty ? steps[0] : null;
+                      // Durum
+                      Expanded(
+                        child: Builder(
+                          builder: (context) {
+                            final steps = (approvalFlow?.steps as List?) ?? [];
+                            final step = steps.isNotEmpty ? steps[0] : null;
 
-              String stepTitle;
-              IconData stepIcon;
-              String subtitle = step?.employee?.name ?? "Bilinmiyor";
-              bool isCompleted = false;
+                            String stepTitle;
+                            IconData stepIcon;
+                            String subtitle = step?.employee?.name ?? "Bilinmiyor";
+                            bool isCompleted = false;
 
-              switch (status?.toLowerCase()) {
-                case 'approved':
-                  stepTitle = "Onaylayan";
-                  stepIcon = Icons.verified_user;
-                  isCompleted = true;
-                  break;
-                case 'rejected':
-                  stepTitle = "Reddeden";
-                  stepIcon = Icons.cancel;
-                  isCompleted = true;
-                  break;
-                case 'pending':
-                default:
-                  stepTitle = "Durum";
-                  stepIcon = Icons.hourglass_empty;
-                  subtitle = "Beklemede";
-                  isCompleted = false;
-                  break;
-              }
+                            switch (status?.toLowerCase()) {
+                              case 'approved':
+                                stepTitle = "Onaylayan";
+                                stepIcon = Icons.verified_user;
+                                isCompleted = true;
+                                break;
+                              case 'rejected':
+                                stepTitle = "Reddeden";
+                                stepIcon = Icons.cancel;
+                                isCompleted = true;
+                                break;
+                              case 'pending':
+                              default:
+                                stepTitle = "Durum";
+                                stepIcon = Icons.hourglass_empty;
+                                subtitle = "Beklemede";
+                                isCompleted = false;
+                                break;
+                            }
 
-              return _buildStep(
-                context: context,
-                icon: stepIcon,
-                title: stepTitle,
-                subtitle: subtitle,
-                isCompleted: isCompleted,
-              );
-            },
-          ),
-        ),
-      ],
-    ),
-  ),
-],
-
+                            return _buildStep(
+                              context: context,
+                              icon: stepIcon,
+                              title: stepTitle,
+                              subtitle: subtitle,
+                              isCompleted: isCompleted,
+                              status: status, // 🔄 BURADA DURUMU GEÇİYORUZ
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
-  }
-
-  String _formatDateOnly(String value) {
-    if (value.contains(' ')) {
-      return value.split(' ').first;
-    }
-    return value;
   }
 
   Widget _buildInfoRow(
@@ -326,12 +319,10 @@ if (employee != null && approvalFlow != null) ...[
               ],
             ),
           ),
-          SizedBox(width: context.dynamicWidth(0.04)),
           Expanded(
             child: Text(
               value,
               style: TextStyle(
-                fontWeight: FontWeight.w500,
                 fontSize: context.responsiveFontSize(0.015, max: 14),
                 color: valueColor ?? AppColors.blackColor,
               ),
@@ -342,14 +333,16 @@ if (employee != null && approvalFlow != null) ...[
     );
   }
 
+  /// 🔄 GÜNCELLENEN _buildStep
   Widget _buildStep({
     required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
     required bool isCompleted,
+    String? status, // ✅ Durum parametresi eklendi
   }) {
-    final color = isCompleted ? AppColors.leaveApproved : AppColors.leavePending;
+    final color = isCompleted ? _getStatusColor(status) : AppColors.leavePending;
 
     return Column(
       children: [
@@ -361,7 +354,7 @@ if (employee != null && approvalFlow != null) ...[
             shape: BoxShape.circle,
             border: Border.all(
               color: color,
-              width: 2,
+              width: 1,
             ),
           ),
           child: Icon(icon, color: color, size: context.dynamicWidth(0.04)),
