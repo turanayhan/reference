@@ -30,3 +30,13 @@ final leaveRulesProvider = Provider<List<LeaveRule>>((ref) {
     orElse: () => [],
   );
 });
+
+
+final totalLeaveDurationProvider = Provider<Duration?>((ref) {
+  final start = ref.watch(startDateProvider);
+  final end = ref.watch(endDateProvider);
+  if (start != null && end != null) {
+    return end.difference(start);
+  }
+  return null;
+});

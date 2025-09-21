@@ -14,9 +14,12 @@ class CustomDropdownField<T> extends ConsumerWidget {
   final EdgeInsetsGeometry? contentPadding;
   final double? borderRadius;
   final double? bottomPadding;
-
-  /// Yeni eklenen: dropdown item'larının nasıl string'e çevrileceğini belirler
   final String Function(T)? itemAsString;
+
+  final TextStyle? style;
+  final TextStyle? hintStyle;
+  final TextStyle? labelStyle;
+  final TextStyle? selectedItemStyle;
 
   const CustomDropdownField({
     Key? key,
@@ -30,7 +33,11 @@ class CustomDropdownField<T> extends ConsumerWidget {
     this.contentPadding,
     this.borderRadius,
     this.bottomPadding,
-    this.itemAsString, // Eklendi
+    this.itemAsString,
+    this.style,
+    this.hintStyle,
+    this.labelStyle,
+    this.selectedItemStyle,
   }) : super(key: key);
 
   @override
@@ -52,75 +59,78 @@ class CustomDropdownField<T> extends ConsumerWidget {
             ),
             child: Text(
               title!,
-              style: TextStyle(
-                color: AppColors.textUnselected,
-                fontSize: context.dynamicHeight(0.0135),
-                fontWeight: FontWeight.w400,
-              ),
+              style: 
+                  TextStyle(
+                    color: AppColors.cursorColor,
+                    fontSize: context.dynamicHeight(0.0135),
+                    fontWeight: FontWeight.w400,
+                  ),
             ),
           ),
         ],
-        DropdownButtonFormField<T>(
-          value: selectedValue,
-          isExpanded: true,
-          dropdownColor: AppColors.inputBackground,
-          menuMaxHeight: 250,
-          items: items.map((item) {
-            final isSelected = item == selectedValue;
-            final text = itemAsString != null
-                ? itemAsString!(item)
-                : item.toString();
-            return DropdownMenuItem<T>(
-              value: item,
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                ),
-              ),
-            );
-          }).toList(),
-          onChanged: enabled == false
-              ? null
-              : (value) => ref.read(provider.notifier).state = value,
-          decoration: InputDecoration(
-            hintText: hintText ?? '',
-            hintStyle: TextStyle(color: AppColors.hintColor),
-            filled: true,
-            fillColor: AppColors.lightGrayColor,
-            contentPadding: padding,
-            prefixIcon: prefixIcon,
-            suffixIcon: suffixIcon,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(radius),
-              borderSide: BorderSide(
-                color: AppColors.inputBorderGrey,
-                width: 1.0,
-              ),
+       DropdownButtonFormField<T>(
+  value: selectedValue,
+  isExpanded: true,
+  hint: Text( // BU SATIRI EKLEDİK
+    hintText ?? '',
+    style: hintStyle ?? TextStyle(color: AppColors.cursorColor),
+  ),
+  dropdownColor: AppColors.inputBackground,
+  menuMaxHeight: 250,
+  items: items.map((item) {
+    final isSelected = item == selectedValue;
+    final text = itemAsString != null
+        ? itemAsString!(item)
+        : item.toString();
+    return DropdownMenuItem<T>(
+      value: item,
+      child: Text(
+        text,
+        style: selectedItemStyle ??
+            TextStyle(
+              color: AppColors.cursorColor,
+              fontWeight: isSelected ? FontWeight.w400 : FontWeight.w400,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(radius),
-              borderSide: BorderSide(
-                color: AppColors.inputBorderGrey,
-                width: 1.0,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(radius),
-              borderSide: BorderSide(
-                color: AppColors.primaryColor,
-                width: 1.5,
-              ),
-            ),
-          ),
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontSize: context.defaultValue.clampFont(14, 16),
-          ),
-        ),
+      ),
+    );
+  }).toList(),
+  onChanged: enabled == false
+      ? null
+      : (value) => ref.read(provider.notifier).state = value,
+  decoration: InputDecoration(
+    filled: true,
+    fillColor: AppColors.lightGrayColor,
+    contentPadding: padding,
+    prefixIcon: prefixIcon,
+    suffixIcon: suffixIcon,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radius),
+      borderSide: BorderSide(
+        color: AppColors.inputBorderGrey,
+        width: 1.0,
+      ),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radius),
+      borderSide: BorderSide(
+        color: AppColors.inputBorderGrey,
+        width: 1.0,
+      ),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radius),
+      borderSide: BorderSide(
+        color: AppColors.cursorColor,
+        width: 1,
+      ),
+    ),
+  ),
+  style: style,
+),
+
         if (bottomPadding != null) SizedBox(height: bottomPadding!),
       ],
     );
   }
 }
+

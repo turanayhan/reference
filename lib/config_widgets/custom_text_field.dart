@@ -109,7 +109,13 @@ class CustomTextFormField extends ConsumerWidget {
           controller: _controller,
           focusNode: focusNode,
           keyboardType: keyboardType,
-          cursorColor: AppColors.blackColor,
+          cursorColor: AppColors.cursorColor,
+          style: style ??
+              TextStyle(
+                fontSize: context.dynamicHeight(0.015),
+                decoration: decorationText,
+                color: AppColors.textSelected,
+              ),
           cursorRadius: const Radius.circular(8),
           readOnly: readOnly ?? false,
           obscureText: obscureText ?? false,
@@ -144,7 +150,7 @@ class CustomTextFormField extends ConsumerWidget {
                   vertical: context.dynamicHeight(0.01),
                 ),
                 hintText: hintText,
-                hintStyle: TextStyle(color: AppColors.hintColor),
+                hintStyle: TextStyle(color: AppColors.cursorColor),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
@@ -162,8 +168,8 @@ class CustomTextFormField extends ConsumerWidget {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: AppColors.primaryColor,
-                    width: 1.2,
+                    color: AppColors.cursorColor,
+                    width: 1,
                   ),
                 ),
                 errorBorder: OutlineInputBorder(

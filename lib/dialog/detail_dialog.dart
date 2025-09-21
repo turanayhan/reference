@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:view_ref/extensions.dart';
-import 'package:view_ref/model/leave_data.dart';
-import 'package:view_ref/model/payment.dart';
+
 
 class DetailDialog extends StatelessWidget {
   final String title;

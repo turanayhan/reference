@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart' as picker;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:view_ref/app_color.dart';
 import 'package:view_ref/config_widgets/custom_dropdown.dart';
 import 'package:view_ref/config_widgets/custom_text_field.dart';
@@ -11,6 +11,7 @@ import 'package:view_ref/model/leave_data.dart';
 import 'package:view_ref/model/leave_model.dart';
 import 'package:view_ref/riverpod/forms_provider.dart';
 import 'package:view_ref/riverpod/theme_provider.dart';
+import 'package:view_ref/utils/util.dart';
 
 class CreateLeavePage extends ConsumerStatefulWidget {
   const CreateLeavePage({Key? key}) : super(key: key);
@@ -19,9 +20,36 @@ class CreateLeavePage extends ConsumerStatefulWidget {
   ConsumerState<CreateLeavePage> createState() => _CreateLeavePageState();
 }
 
-class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFormMixin {
-  bool _hideNavBar = false;
-  final selectedLeaveTypeProvider = StateProvider<String?>((ref) => null);
+class _CreateLeavePageState extends ConsumerState<CreateLeavePage>
+    with LeaveFormMixin {
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(selectedLeaveRuleProvider.notifier).state = null;
+      ref.read(startDateProvider.notifier).state = null;
+      ref.read(endDateProvider.notifier).state = null;
+      ref.read(returnDateProvider.notifier).state = null;
+      ref.read(descriptionProvider.notifier).state = '';
+    });
+  }
+
+String formatDuration(Duration duration) {
+  final totalMinutes = duration.inMinutes;
+  final days = totalMinutes ~/ (24 * 60);
+  final hours = (totalMinutes % (24 * 60)) ~/ 60;
+  final minutes = totalMinutes % 60;
+
+  String result = '';
+  if (days > 0) result += '$days gün ';
+  if (hours > 0) result += '$hours saat ';
+  if (minutes > 0) result += '$minutes dakika';
+  if (result.isEmpty) result = '0 dakika';
+  return result.trim();
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -30,19 +58,23 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
     final endDate = ref.watch(endDateProvider);
     final returnDate = ref.watch(returnDateProvider);
     final description = ref.watch(descriptionProvider);
-    final totalLeaveDays = ref.watch(totalLeaveDaysProvider);
-       final selectedRule = ref.watch(selectedLeaveRuleProvider);
-        ref.watch(themeProvider);
+    final totalDuration = ref.watch(totalLeaveDurationProvider);
+    final selectedRule = ref.watch(selectedLeaveRuleProvider);
+    ref.watch(themeProvider);
+
+    final totalDurationText =
+        totalDuration != null ? formatDuration(totalDuration) : '0 saat';
 
     return Scaffold(
       backgroundColor: AppColors.backgroundWhite,
       appBar: const CustomAppBar(
         title: 'Yeni İzin Oluştur',
         showBackButton: true,
+        showLogo: false,
       ),
       body: Padding(
-      
-        padding: context.paddingHorizontalDefault + context.paddingVerticalDefault,
+        padding:
+            context.paddingHorizontalDefault + context.paddingVerticalDefault,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,20 +82,22 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
               CustomDropdownField<LeaveRule>(
                 title: "İzin Türü *",
                 hintText: "İzin Türü Seçiniz",
+                hintStyle: TextStyle(color: AppColors.cursorColor),
+                style: TextStyle(color: AppColors.cursorColor),
                 items: leaveRules,
                 itemAsString: (rule) => rule.name ?? "İsimsiz Kural",
                 provider: selectedLeaveRuleProvider,
               ),
               SizedBox(height: context.defaultValue),
 
+              // Burada toplam izin süresini gün ve saat olarak gösteriyoruz
               CustomTextFormField(
-                title: 'Toplam İzin Günü *',
+                title: 'Toplam İzin Süresi *',
                 readOnly: true,
                 controller: TextEditingController(
-                  text: totalLeaveDays.toString(),
+                  text: totalDurationText,
                 ),
-                hintText: '0',
-                style: TextStyle(color: AppColors.textUnselected),
+                hintText: '0 saat',
                 maxLines: 1,
                 minLines: 1,
               ),
@@ -81,7 +115,6 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
                     ref.read(endDateProvider.notifier).state = null;
                   }
                 },
-             
               ),
               SizedBox(height: context.defaultValue),
 
@@ -92,8 +125,7 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
                 onDateSelected: (date) {
                   ref.read(endDateProvider.notifier).state = date;
                 },
-             
-                minTime: startDate,
+                minTime: startDate ?? DateTime.now(),
               ),
               SizedBox(height: context.defaultValue),
 
@@ -108,40 +140,69 @@ class _CreateLeavePageState extends ConsumerState<CreateLeavePage> with LeaveFor
               ),
               SizedBox(height: context.defaultValue),
 
-              buildDateField(
-                context: context,
-                title: 'Geri Dönüş Tarihi',
-                date: returnDate,
-                onDateSelected: (date) {
-                  ref.read(returnDateProvider.notifier).state = date;
-                },
-              
-                minTime: endDate,
-              ),
-              SizedBox(height: context.defaultValue),
+            
 
-              buildButtons(
-                context,
-                () => Navigator.pop(context),
-                
-                () async {
-              
+              buildButtons(context, () => Navigator.pop(context), () async {
+                if (selectedRule == null) {
+                  showFlushbar(
+                    context,
+                    FlushbarErrorModel(
+                      title: 'Uyarı',
+                      subtitle: 'Lütfen izin türünü seçiniz',
+                    ),
+                  );
+                  return;
+                }
+                if (startDate == null) {
+                  showFlushbar(
+                    context,
+                    FlushbarErrorModel(
+                      title: 'Uyarı',
+                      subtitle: 'Lütfen başlangıç tarihini seçiniz',
+                    ),
+                  );
+                  return;
+                }
+                if (endDate == null) {
+                  showFlushbar(
+                    context,
+                    FlushbarErrorModel(
+                      title: 'Uyarı',
+                      subtitle: 'Lütfen bitiş tarihini seçiniz',
+                    ),
+                  );
+                  return;
+                }
 
-if (selectedRule != null && startDate != null && endDate != null) {
-  final leaveData = LeaveData(
-    leaveRuleId: selectedRule.id!,
-    startDate: startDate.toString(),
-    endDate: endDate.toString(),
-    days: totalLeaveDays,
-    description: description ?? '',
-    leavePolicyId: selectedRule.leavePolicyId,
-    returnDate: returnDate?.toString(),
-  );
-  // Artık tüm ID'lere sahipsin
-}
+                // İzin gün sayısını saat bazlı tam gün olarak hesapla (ör: 1 gün 2 saat -> 2 gün)
+                final totalDays = totalDuration != null
+                    ? (totalDuration.inMinutes / (60 * 24)).ceil()
+                    : 0;
 
-                },
-              ),
+                final leaveData = LeaveData(
+                  leaveRuleId: selectedRule.id,
+                  startDate: startDate.toString(),
+                  endDate: endDate.toString(),
+                  days: totalDays,
+                  description: description,
+                  leavePolicyId: selectedRule.leavePolicyId,
+                  returnDate: returnDate?.toString(),
+                );
+
+                // Buraya leaveData ile API çağrısı veya başka işlem yapabilirsin
+
+                // Örnek başarı mesajı göster
+                showFlushbar(
+                  context,
+                  FlushbarSuccessModel(
+                    title: 'Başarılı',
+                    subtitle: 'İzin başarıyla oluşturuldu',
+                  ),
+                );
+
+                // Sayfayı geri kapat
+                Navigator.pop(context);
+              }),
             ],
           ),
         ),
@@ -152,7 +213,6 @@ if (selectedRule != null && startDate != null && endDate != null) {
   Future<void> _showDateTimePicker({
     required BuildContext context,
     required ValueChanged<DateTime> onConfirm,
- 
     DateTime? minTime,
     DateTime? maxTime,
   }) async {
@@ -164,32 +224,19 @@ if (selectedRule != null && startDate != null && endDate != null) {
       theme: picker.DatePickerTheme(
         backgroundColor: AppColors.inputBackground,
         itemStyle: TextStyle(
-          color: AppColors.primaryColor,
-          fontSize: context.responsiveFontSize(0.028, max: 24),
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.2,
+          color: AppColors.textUnselected,
+          fontSize: context.responsiveFontSize(0.018, max: 18),
         ),
         doneStyle: TextStyle(
           color: AppColors.primaryColor,
-          fontSize: context.responsiveFontSize(0.025, max: 20),
-          fontWeight: FontWeight.w700,
+          fontSize: context.responsiveFontSize(0.016, max: 16),
+          fontWeight: FontWeight.w600,
         ),
-        cancelStyle: TextStyle(
-          color: AppColors.textUnselected,
-          fontSize: context.responsiveFontSize(0.022, max: 18),
-          fontWeight: FontWeight.w500,
-        ),
-        containerHeight: context.height * 0.42, // Ekrana göre yükseklik
-        titleHeight: context.height * 0.07,
-        itemHeight: context.height * 0.06,
-        headerColor: AppColors.primaryColor.withOpacity(0.08),
-        
       ),
       onConfirm: onConfirm,
       currentTime: DateTime.now(),
       locale: picker.LocaleType.tr,
     );
-    setState(() => _hideNavBar = false);
   }
 
   Widget buildDateField({
@@ -197,7 +244,6 @@ if (selectedRule != null && startDate != null && endDate != null) {
     required String title,
     required DateTime? date,
     required void Function(DateTime) onDateSelected,
-  
     String? hintText,
     DateTime? minTime,
     DateTime? maxTime,
@@ -209,7 +255,6 @@ if (selectedRule != null && startDate != null && endDate != null) {
       onTap: () => _showDateTimePicker(
         context: context,
         onConfirm: onDateSelected,
-      
         minTime: minTime,
         maxTime: maxTime,
       ),
@@ -225,16 +270,14 @@ if (selectedRule != null && startDate != null && endDate != null) {
 
   Widget buildButtons(
     BuildContext context,
-
     VoidCallback onCancel,
-    VoidCallback onSubmit,
+    Future<void> Function() onSubmit,
   ) {
     return Row(
       children: [
-        // İptal Butonu
         Expanded(
           child: OutlinedButton(
-            onPressed: onCancel,
+            onPressed: _isSubmitting ? null : onCancel,
             style: OutlinedButton.styleFrom(
               minimumSize: const Size.fromHeight(40),
               side: BorderSide(color: AppColors.inputBorderGrey, width: 1.0),
@@ -247,18 +290,22 @@ if (selectedRule != null && startDate != null && endDate != null) {
               'İptal Et',
               style: TextStyle(
                 color: AppColors.textUnselected,
-                fontSize: context.defaultValue.clampFont(12, 16),
+                fontSize: context.responsiveFontSize(0.018, max: 16),
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
         ),
         SizedBox(width: context.lowValue),
-
-        // Oluştur Butonu
         Expanded(
           child: ElevatedButton(
-            onPressed: onSubmit,
+            onPressed: _isSubmitting
+                ? null
+                : () async {
+                    setState(() => _isSubmitting = true);
+                    await onSubmit();
+                    if (mounted) setState(() => _isSubmitting = false);
+                  },
             style: ElevatedButton.styleFrom(
               minimumSize: const Size.fromHeight(40),
               backgroundColor: AppColors.primaryColor,
@@ -266,17 +313,35 @@ if (selectedRule != null && startDate != null && endDate != null) {
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
-            child: Text(
-              'Oluştur',
-              style: TextStyle(
-                color: AppColors.whiteColor,
-                fontSize: context.defaultValue.clampFont(12, 16),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: _isSubmitting
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                : Text(
+                    'Oluştur',
+                    style: TextStyle(
+                      color: AppColors.whiteColor,
+                      fontSize: context.responsiveFontSize(0.018, max: 16),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ),
       ],
     );
+  }
+
+  void showFlushbar(
+    BuildContext context,
+    FlushbarNotificationModel notificationModel,
+  ) {
+    if (!context.mounted) return;
+
+  
   }
 }
