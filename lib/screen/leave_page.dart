@@ -189,7 +189,6 @@ String formatDuration(Duration duration) {
                   returnDate: returnDate?.toString(),
                 );
 
-                // Buraya leaveData ile API çağrısı veya başka işlem yapabilirsin
 
                 // Örnek başarı mesajı göster
                 showFlushbar(

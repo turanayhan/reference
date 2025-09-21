@@ -58,9 +58,10 @@ class AppColors {
   // --------------------------
   static Color get sidebarBackground =>
       _themeMode == ThemeMode.light ? Colors.white : Colors.black;
-  static Color get selectedItemBackground => _themeMode == ThemeMode.light
-      ? const Color(0xFFE3F2FD)
-      : Colors.grey[800]!;
+static Color get selectedItemBackground => _themeMode == ThemeMode.light
+    ? const Color(0xFFF5F5F5) // 🔹 warm grey
+    : Colors.grey[800]!;
+
 
   static Color get iconCustomColor =>
       _themeMode == ThemeMode.light ? const Color(0xFF05081A) : Colors.white;
@@ -173,9 +174,12 @@ class AppColors {
   static Color get pageBackground =>
       _themeMode == ThemeMode.light ? const Color(0xFFF2F2F7) : Colors.black;
 
-  static Color get tabBarIndicatorColor => _themeMode == ThemeMode.light
-      ? const Color(0xFFE3F2FD)
-      : Colors.grey[800]!;
+static Color get tabBarIndicatorColor => _themeMode == ThemeMode.light
+    ? const Color(0xFF3C3C3C)
+    : const Color(0xFFF0F0F0);
+
+
+
 
   static Color get textSecondary => _themeMode == ThemeMode.light
       ? const Color(0xFF757575)

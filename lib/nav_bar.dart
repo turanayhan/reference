@@ -23,9 +23,9 @@ class CustomNavigationBar extends StatelessWidget {
         vertical: context.dynamicHeight(0.01),
       ),
       decoration: BoxDecoration(
-        color: AppColors.sidebarBackground,
+        color: AppColors.backgroundWhite,
         borderRadius: BorderRadius.circular(context.dynamicHeight(0.03)),
-        border: Border.all(color: AppColors.borderLight, width: 1),
+        border: Border.all(color: AppColors.borderLight, width: 0.1),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadowColor,
@@ -46,14 +46,27 @@ class CustomNavigationBar extends StatelessWidget {
                 padding: EdgeInsets.symmetric(
                   vertical: context.dynamicHeight(0.01),
                 ),
-                decoration: isSelected
-                    ? BoxDecoration(
-                        color: AppColors.selectedItemBackground,
-                        borderRadius: BorderRadius.circular(
-                          context.dynamicHeight(0.02),
-                        ),
-                      )
-                    : null,
+              decoration: isSelected
+    ? BoxDecoration(
+        color: AppColors.selectedItemBackground,
+        border: Border.all(
+          color: AppColors.tabBarIndicatorColor,
+          width: 0.2,
+        ),
+        borderRadius: BorderRadius.circular(
+          context.dynamicHeight(0.02),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      )
+    : null,
+
+
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -64,12 +77,11 @@ class CustomNavigationBar extends StatelessWidget {
                           ? AppColors.iconSelected
                           : AppColors.iconUnselected,
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 1),
                     Text(
                       menuItems[index]['label'],
                       style: TextStyle(
                         fontSize: context.dynamicHeight(0.011).clamp(10.0, 14.0),
-                        fontWeight: FontWeight.w600,
                         color: isSelected
                                ? AppColors.iconSelected
                           : AppColors.iconUnselected,
