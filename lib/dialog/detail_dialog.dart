@@ -75,7 +75,7 @@ class DetailDialog extends StatelessWidget {
                           title,
                           style: TextStyle(
                             fontSize: context.responsiveFontSize(0.022, max: 18),
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w500,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -129,12 +129,10 @@ class DetailDialog extends StatelessWidget {
 
               SizedBox(height: context.dynamicHeight(0.025)),
 
-              // Info Rows
               ...infoRows.map(
                 (item) {
                   String displayValue = item.value;
 
-                  // Tarih alanı ise sadece tarih kısmını göster
                   if (item.title.toLowerCase().contains('tarih')) {
                     displayValue = item.value;
                   }
@@ -187,14 +185,14 @@ class DetailDialog extends StatelessWidget {
                         ),
                       ),
 
-                      // Ok 1
+
                       Icon(
                         Icons.arrow_forward_ios,
                         color: AppColors.grey,
                         size: context.dynamicWidth(0.035),
                       ),
 
-                      // Şirket
+
                       Expanded(
                         child: _buildStep(
                           context: context,
@@ -206,14 +204,12 @@ class DetailDialog extends StatelessWidget {
                         ),
                       ),
 
-                      // Ok 2
                       Icon(
                         Icons.arrow_forward_ios,
                         color: AppColors.grey,
                         size: context.dynamicWidth(0.035),
                       ),
 
-                      // Durum
                       Expanded(
                         child: Builder(
                           builder: (context) {
@@ -228,7 +224,7 @@ class DetailDialog extends StatelessWidget {
                             switch (status?.toLowerCase()) {
                               case 'approved':
                                 stepTitle = "Onaylayan";
-                                stepIcon = Icons.verified_user;
+                                stepIcon = Icons.check_circle;
                                 isCompleted = true;
                                 break;
                               case 'rejected':
@@ -251,7 +247,7 @@ class DetailDialog extends StatelessWidget {
                               title: stepTitle,
                               subtitle: subtitle,
                               isCompleted: isCompleted,
-                              status: status, // 🔄 BURADA DURUMU GEÇİYORUZ
+                              status: status, 
                             );
                           },
                         ),
@@ -333,14 +329,14 @@ class DetailDialog extends StatelessWidget {
     );
   }
 
-  /// 🔄 GÜNCELLENEN _buildStep
+
   Widget _buildStep({
     required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
     required bool isCompleted,
-    String? status, // ✅ Durum parametresi eklendi
+    String? status, 
   }) {
     final color = isCompleted ? _getStatusColor(status) : AppColors.leavePending;
 
